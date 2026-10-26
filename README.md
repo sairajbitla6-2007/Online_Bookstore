@@ -42,7 +42,7 @@ The project includes three CSV files, each containing 500 records:
 │   ├── customers.csv
 │   └── orders.csv
 ├── scripts/
-│   └── online_bookstore.sql
+│   └── onlinebook_store.sql
 ├── .gitignore
 └── README.md
 ```
@@ -63,7 +63,7 @@ The query set includes questions such as:
 - Which customers or cities account for the most spending?
 - Which books have not been ordered, and what stock remains after sales?
 
-The complete queries are in [`scripts/online_bookstore.sql`](scripts/online_bookstore.sql).
+The complete queries are in [`scripts/onlinebook_store.sql`](scripts/onlinebook_store.sql).
 
 ## Dashboard
 
@@ -77,10 +77,12 @@ No dashboard or visualization files are included in this SQL project.
 4. Run the script with a MySQL account that can create databases and tables:
 
    ```sh
-   mysql --local-infile=1 -u your_user -p < scripts/online_bookstore.sql
+   mysql --local-infile=1 -u YOUR_MYSQL_USERNAME -p < scripts/onlinebook_store.sql
    ```
 
-The script creates or reuses the `books` database, recreates its project tables, imports the CSV files using paths relative to the repository root, and runs the included queries. If your MySQL server disables local data loading, enable `local_infile` in your MySQL server configuration before running the script.
+Run the command from the repository root so the script can find the CSV files at `data/books.csv`, `data/customers.csv`, and `data/orders.csv`. MySQL prompts for the account password; enter it at the prompt rather than putting it in the command.
+
+The script creates or reuses the `books` database, drops and recreates its `orders`, `books`, and `customers` tables, imports all three CSV files, and runs the included queries. **Running it replaces the contents of those tables in the `books` database.** Back up any existing data first. The MySQL account must be allowed to create/use the database and tables and load local data. The MySQL client option enables `LOCAL INFILE` for the client; if the server also disables local data loading, enable `local_infile` in the server configuration.
 
 ## Results and Future Work
 

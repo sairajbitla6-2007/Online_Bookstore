@@ -10,56 +10,45 @@ use books;
 drop table if exists orders;
 drop table if exists books;
 drop table if exists customers;
+
 create table books (
 Book_ID	serial primary key,
-Title varchar(31),
-Author varchar(19),
-Genre varchar(7),
+Title varchar(255),
+Author varchar(255),
+Genre varchar(255),
 Published_Year	int,
 Price decimal(4,2),
 Stock int
 );
 
-drop table if exists customers;
 create table  customers (
 Customer_ID serial primary key,
-Name varchar(16),
-Email	varchar(31),
+Name varchar(255),
+Email	varchar(255),
 Phone int,
-City varchar(10),
-Country varchar(13)
+City varchar(255),
+Country varchar(255)
 );
 
-drop table if exists orders;
 create table orders (
 Order_ID serial primary key,
 Customer_ID	bigint unsigned,
 Book_ID	 bigint unsigned,
 Order_Date datetime,
 Quantity int,
-Total_Amount decimal(5, 3),
+Total_Amount decimal(10, 2),
 foreign key (customer_id) references customers(customer_id),
 foreign key (book_id) references books(book_id)
-
 );
-
-ALTER TABLE books MODIFY COLUMN Genre VARCHAR(255);
-ALTER TABLE books MODIFY COLUMN title VARCHAR(255);
-ALTER TABLE books MODIFY COLUMN author VARCHAR(255);
 
 -- Import Data into Books Table
 
 LOAD DATA LOCAL INFILE 'data/books.csv'
 INTO TABLE books
-FIELDS TERMINATED BY ',' 
+FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'
 IGNORE 1 LINES;
-
-ALTER TABLE customers MODIFY COLUMN city VARCHAR(255);
-ALTER TABLE customers MODIFY COLUMN country VARCHAR(255);
-ALTER TABLE customers MODIFY COLUMN name VARCHAR(255);
-ALTER TABLE customers MODIFY COLUMN email VARCHAR(255);
 
 -- Import Data into Customers Table
 
@@ -69,8 +58,6 @@ FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'
 IGNORE 1 LINES;
-
-ALTER TABLE orders MODIFY COLUMN total_amount decimal(10,5);
 
 -- Import Data into Orders Table
 
@@ -86,8 +73,6 @@ SELECT @@secure_file_priv;
 select*from customers;
 select*from books;
 select*from orders;
-
-ALTER TABLE orders MODIFY COLUMN total_amount decimal(10,2);
 
 -- Basic Questions 
 
@@ -171,7 +156,7 @@ having num_of_orders >= 2;
 select p.customer_id, o.name, o.email, o.phone, o.city, o.country , count(p.order_id) as num_of_orders 
 from customers o 
 join orders p on o.customer_id = p.customer_id 
-group by p.customer_id 
+group by p.customer_id
 having num_of_orders >= 2;
 
 -- 4) Find the most frequently ordered book:
@@ -196,7 +181,7 @@ select b.book_id, b.title, count(o.order_id) num_of_orders
 from books b 
 left join orders o on b.book_id = o.book_id 
 group by b.book_id 
-having num_of_orders =0 ;
+having num_of_orders = 0;
 
 -- 6) Show the top 3 most expensive books of 'Fantasy' Genre :
 
@@ -224,7 +209,7 @@ select c.Customer_ID, c.name, c.email, c.Phone, c.city, c.country, count(o.order
 as total_orders, sum(o.total_amount) as total_amount_on_orders 
 from customers c 
 join orders o on c.customer_id = o.customer_id 
-group by customer_id 
+group by c.customer_id
 order by total_amount_on_orders desc 
 limit 1;
 
@@ -238,14 +223,14 @@ select b.book_id,b.title, b.stock, IFNULL(sum(o.quantity), 0) as sold, b.stock -
 from books b 
 left join orders o 
 on b.book_id = o.book_id
-group by b.book_id 
+group by b.book_id
 order by b.book_id asc;
 
 select b.book_id, b.stock - ifnull(sum(o.quantity),0) remaining_stock
 from books b 
 left join orders o 
 on b.book_id = o.book_id
-group by book_id;
+group by b.book_id;
 
 select sum(b.stock - ifnull(o.total_ordered ,0)) remaining_stock
 from books b
